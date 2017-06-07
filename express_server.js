@@ -1,6 +1,7 @@
 var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080;
+var cookieParse = require('cookie-parser');
 
 //generates a random 6 alphanumeric value
 function generateRandomString() {
@@ -20,6 +21,10 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//allowing access post request parameters
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParse())
 app.get("/", (req, res) => {
   res.end("Hello!");
 });
@@ -33,25 +38,34 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  let templateVars = {
+      username: req.cookies["username"]
+  }
   res.render("urls_new");
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { 
+       urls: urlDatabase,
+       username: req.cookies["username"]};
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
-  let templateVars = { shortURL: shortURL,
-    longURL: urlDatabase[shortURL]
+  let templateVars = { 
+      shortURL: shortURL,
+      longURL: urlDatabase[shortURL], 
+      username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
 });
 
-//allowing access post request parameters
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
+//redirects page
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
 
 //deletes an item
 app.post("/urls/:id/delete", (req, res) => {
@@ -74,10 +88,16 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-//redirects page
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+//login 
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("/urls");
+});
+
+// //logout
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
 });
 
 //Initialize app

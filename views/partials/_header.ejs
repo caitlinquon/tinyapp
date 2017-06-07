@@ -1,8 +1,18 @@
 <header>TinyApp</header>
+Welcome <%=username%><br>Login successful!<br> 
 
-<form method="POST" action="/urls/login">
+<% if(username){ %>
+  <form method="POST" action="/logout">
+  <button>Logout</button>
+  </form>
+ <% } else{ %>  
+  <form method="POST" action="/login">
   <label for="username">Username:</label>
-  <input name="usernme" style="width: 30%; font-size: 20px">
+  <input name="username" style="width: 30%; font-size: 15px">
   <button>Login</button>
-   </form>
+  </form>
+<% } %>
+
+
+
 
