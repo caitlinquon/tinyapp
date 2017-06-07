@@ -28,9 +28,6 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
-  console.log('short URL', req.params.id);
-  console.log('short URL', shortURL);
-  console.log('long URL', urlDatabase[shortURL]);
   let templateVars = { shortURL: shortURL,
                        longURL: urlDatabase[shortURL]
                       };
@@ -39,4 +36,16 @@ app.get("/urls/:id", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
+});
+
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // debug statement to see POST parameters
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });

@@ -2,14 +2,35 @@
 <html lang="en">
 <head>
   <title>TinyApp</title>
+  <style>
+table, td, th {    
+    border: 5px solid #ddd;
+    text-align: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 40%;
+}
+
+th, td {
+    padding: 10px;
+}
+</style>
 </head>
 <body>
+  <% include partials/_header.ejs %>
   <p><a href="#">Create new shortened URL</a></p>
-  <ul>
+  <table border="2">
+    <tr>
+     <td><h4>Short ID<h4></td> <td><h4>Long ID<h4></td>
+    </tr>
   <% Object.keys(urls).forEach(function (key) { %>
-    <li><%= key %> - <%= urls[key] %></li>
+    <tr>
+     <td><%= key %> </td> <td> <%= urls[key] %></td>
+    </tr>
   <% }) %>
-  </ul>
+  </table>
 
   
   
