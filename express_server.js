@@ -2,6 +2,7 @@ var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080;
 
+//generates a random 6 alphanumeric value
 function generateRandomString() {
   var result = '';
   var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -52,10 +53,11 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+//allowing access post request parameters
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
-
+//gives link in order to redirect
 app.post("/urls", (req, res) => {
   console.log(req.body);
   let tmp = generateRandomString();
@@ -63,6 +65,7 @@ app.post("/urls", (req, res) => {
   res.send(`<html><a href='http://localhost:8080/u/${tmp}'>Here's your link.</a>: http://localhost:8080/urls/${tmp}</html>`);
 });
 
+//redirects page
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
