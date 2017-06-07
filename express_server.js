@@ -70,7 +70,6 @@ app.post("/urls", (req, res) => {
 //updating an object
 app.post("/urls/:id", (req, res) => {
   const updatedURL = urlDatabase[req.params.id];
-  console.log(updatedURL);
   urlDatabase[req.params.id] = req.body.longURL;
   res.redirect("/urls");
 });
