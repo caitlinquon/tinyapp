@@ -1,6 +1,6 @@
 var express = require("express");
 var app = express();
-var PORT = process.env.PORT || 8080; // default port 8080
+var PORT = process.env.PORT || 8080;
 
 function generateRandomString() {
   var result = '';
@@ -43,8 +43,8 @@ app.get("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let shortURL = req.params.id;
   let templateVars = { shortURL: shortURL,
-                       longURL: urlDatabase[shortURL]
-                      };
+    longURL: urlDatabase[shortURL]
+  };
   res.render("urls_show", templateVars);
 });
 
@@ -57,11 +57,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  
+  console.log(req.body);
   let tmp = generateRandomString();
   urlDatabase[tmp] = req.body.longURL;
   res.send(`<html><a href='http://localhost:8080/u/${tmp}'>Here's your link.</a>: http://localhost:8080/urls/${tmp}</html>`);
-})
+});
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
