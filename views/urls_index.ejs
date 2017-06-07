@@ -30,11 +30,13 @@ th, td {
     </tr>
   <% Object.keys(urls).forEach(function (key) { %>
     <tr>
-     <td><%= key %> </td> 
+     <td>
+       <%= key %> <a href= "/urls/<%= key %>"> Edit </a>
+     </td> 
      <td>
       <form method="POST" action="/urls/<%= key %>/delete">
       <%= urls[key] %>
-    <button> Delete </button>
+     <button> Delete </button>
      </form>
      </td>
     </tr>

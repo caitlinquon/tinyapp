@@ -53,6 +53,7 @@ app.get("/urls/:id", (req, res) => {
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
+//deletes an item
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
@@ -65,6 +66,11 @@ app.post("/urls", (req, res) => {
   urlDatabase[tmp] = req.body.longURL;
   res.send(`<html><a href='http://localhost:8080/u/${tmp}'>Here's your link.</a>: http://localhost:8080/urls/${tmp}</html>`);
 });
+
+app.post("/urls/:id/update", (req, res) => {
+  
+  res.redirect("/urls");
+})
 
 //redirects page
 app.get("/u/:shortURL", (req, res) => {
