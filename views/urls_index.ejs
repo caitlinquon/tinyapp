@@ -12,7 +12,7 @@ table, td, th {
 
 table {
     border-collapse: collapse;
-    width: 40%;
+    width: 50%;
 }
 
 th, td {
@@ -30,7 +30,13 @@ th, td {
     </tr>
   <% Object.keys(urls).forEach(function (key) { %>
     <tr>
-     <td><%= key %> </td> <td> <%= urls[key] %></td>
+     <td><%= key %> </td> 
+     <td>
+      <form method="POST" action="/urls/<%= key %>/delete">
+      <%= urls[key] %>
+    <button> Delete </button>
+     </form>
+     </td>
     </tr>
   <% }) %>
   </table>

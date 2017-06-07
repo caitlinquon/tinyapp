@@ -49,13 +49,14 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
-
 //allowing access post request parameters
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
+});
 
 //gives link in order to redirect
 app.post("/urls", (req, res) => {
@@ -71,3 +72,6 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
