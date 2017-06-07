@@ -12,7 +12,7 @@ function generateRandomString() {
   }
   return result;
 }
-
+// Configuration
 app.set("view engine", "ejs");
 
 var urlDatabase = {
@@ -67,10 +67,13 @@ app.post("/urls", (req, res) => {
   res.send(`<html><a href='http://localhost:8080/u/${tmp}'>Here's your link.</a>: http://localhost:8080/urls/${tmp}</html>`);
 });
 
-app.post("/urls/:id/update", (req, res) => {
-  
+//updating an object
+app.post("/urls/:id", (req, res) => {
+  const updatedURL = urlDatabase[req.params.id];
+  console.log(updatedURL);
+  urlDatabase[req.params.id] = req.body.longURL;
   res.redirect("/urls");
-})
+});
 
 //redirects page
 app.get("/u/:shortURL", (req, res) => {
@@ -78,6 +81,7 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+//Initialize app
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
