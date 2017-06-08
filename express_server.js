@@ -3,6 +3,20 @@ var app = express();
 var PORT = process.env.PORT || 8080;
 var cookieParse = require('cookie-parser');
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+};
+
+
 //generates a random 6 alphanumeric value
 function generateRandomString() {
   var result = '';
@@ -39,16 +53,62 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-      username: req.cookies["username"]
+      user: users[req.cookies.userID]
   }
-  res.render("urls_new");
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls", (req, res) => {
   let templateVars = { 
        urls: urlDatabase,
-       username: req.cookies["username"]};
+       user: users[req.cookies.userID]};
   res.render("urls_index", templateVars);
+});
+
+
+app.post("/register", (req, res) => {
+  if (req.body.email === '' || req.body.password === '') {
+    res.status(400).send(`<p>Please fill out login</p>
+    <a href='http://localhost:8080/urls/'>Return to homepage.</a>`);
+    return;
+  } 
+  for(let user in users){
+    if(users[user].email === req.body.email) {
+      res.status(400).send(`<p>This email has been taken</p>
+    <a href='http://localhost:8080/urls/'>Return to homepage.</a>`);
+      return;
+    } 
+  }
+  const userID = generateRandomString();
+  users[userID] = {
+    id: userID, 
+    email: req.body.email, 
+    password: req.body.password
+  }
+res.cookie("userID", userID);
+res.cookie("email", req.body.email);
+res.redirect("/urls");    
+});
+
+// registration page
+app.get("/register", (req, res) => {
+  res.render("urls_register");
+});
+
+app.get("/login", (req, res) => {
+  res.render("urls_login");
+})
+
+//login 
+app.post("/login", (req, res) => {
+  res.cookie("userID", req.body.username);
+  res.redirect("/urls");
+});
+
+// //logout
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -56,7 +116,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = { 
       shortURL: shortURL,
       longURL: urlDatabase[shortURL], 
-      username: req.cookies["username"]
+      user: users[req.cookies.userID]
   };
   res.render("urls_show", templateVars);
 });
@@ -75,7 +135,6 @@ app.post("/urls/:id/delete", (req, res) => {
 
 //gives link in order to redirect
 app.post("/urls", (req, res) => {
-  console.log(req.body);
   let tmp = generateRandomString();
   urlDatabase[tmp] = req.body.longURL;
   res.send(`<html><a href='http://localhost:8080/u/${tmp}'>Here's your link.</a>: http://localhost:8080/urls/${tmp}</html>`);
@@ -85,18 +144,6 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   const updatedURL = urlDatabase[req.params.id];
   urlDatabase[req.params.id] = req.body.longURL;
-  res.redirect("/urls");
-});
-
-//login 
-app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
-});
-
-// //logout
-app.post("/logout", (req, res) => {
-  res.clearCookie("username");
   res.redirect("/urls");
 });
 
