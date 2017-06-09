@@ -37,8 +37,14 @@ const passwordMatch = (userID, password) => {
 app.set("view engine", "ejs");
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID",
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "userRandomID2",
+  }
 };
 
 //allowing access post request parameters
@@ -61,7 +67,11 @@ app.get("/urls/new", (req, res) => {
   let templateVars = {
       user: users[req.cookies.userID]
   }
-  res.render("urls_new", templateVars);
+  if (req.cookies.userID) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls", (req, res) => {
@@ -134,10 +144,18 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+
+  console.log(req.params.id);
+  
+  let url = urlDatabase[req.params.id];
+
+  if (url.userID !== req.cookies.userID) {
+    res.status(403).send("This URL does not belong to you");
+  }
   let shortURL = req.params.id;
   let templateVars = { 
       shortURL: shortURL,
-      longURL: urlDatabase[shortURL], 
+      longURL: urlDatabase[shortURL].longURL, 
       user: users[req.cookies.userID]
   };
   res.render("urls_show", templateVars);
@@ -145,27 +163,56 @@ app.get("/urls/:id", (req, res) => {
 
 //redirects page
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
 //deletes an item
 app.post("/urls/:id/delete", (req, res) => {
+  if (!req.cookies.userID) {
+    res.status(403).send("You are not logged in!");
+  }
+   const shortUrl = req.params.id;
+  const userURL = urlDatabase[shortUrl];
+  
+  if (userURL.userID !== req.cookies.userID) {
+    return res.status(403).send("This URL does not belong to you");
+  }
+  
+  userURL.longURL = req.body.longURL;
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
+
 //gives link in order to redirect
 app.post("/urls", (req, res) => {
+  if (!req.cookies.userID){
+    res.status(403).send("You are not logged in!");
+  }
+
   let tmp = generateRandomString();
-  urlDatabase[tmp] = req.body.longURL;
+  urlDatabase[tmp] = {
+    longURL: req.body.longURL,
+    userID: req.cookies.userID
+  };
   res.send(`<html><a href='http://localhost:8080/u/${tmp}'>Here's your link.</a>: http://localhost:8080/urls/${tmp}</html>`);
 });
 
 //updating an object
 app.post("/urls/:id", (req, res) => {
-  const updatedURL = urlDatabase[req.params.id];
-  urlDatabase[req.params.id] = req.body.longURL;
+  if (!req.cookies.userID){
+    res.status(403).send("You are not logged in!");
+  }
+  const shortUrl = req.params.id;
+  const userURL = urlDatabase[shortUrl];
+  
+  if (userURL.userID !== req.cookies.userID) {
+    res.status(403).send("This URL does not belong to you");
+
+  }
+  
+  userURL.longURL = req.body.longURL;
   res.redirect("/urls");
 });
 
