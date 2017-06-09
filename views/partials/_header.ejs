@@ -1,16 +1,14 @@
 <header>TinyApp</header>
-Welcome <%=username%><br>Login successful!<br> 
 
-<% if(username){ %>
+
+<% if(locals.user){ %>
+Welcome <%=locals.user.id%>
   <form method="POST" action="/logout">
   <button>Logout</button>
   </form>
  <% } else{ %>  
-  <form method="POST" action="/login">
-  <label for="username">Username:</label>
-  <input name="username" style="width: 30%; font-size: 15px">
-  <button>Login</button>
-  </form>
+  <a href="/login"> Login </a><br>
+  <a href="/register"> Register </a>
 <% } %>
 
 
