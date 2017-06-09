@@ -2,7 +2,7 @@
 
 
 <% if(locals.user){ %>
-Welcome <%=locals.user%>
+Welcome <%=locals.user.id%>
   <form method="POST" action="/logout">
   <button>Logout</button>
   </form>

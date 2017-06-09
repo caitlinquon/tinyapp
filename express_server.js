@@ -27,6 +27,12 @@ function generateRandomString() {
   }
   return result;
 }
+
+//checks to see if password matches userid
+const passwordMatch = (userID, password) => {
+  return users[userID].password === password
+}
+
 // Configuration
 app.set("view engine", "ejs");
 
@@ -86,7 +92,6 @@ app.post("/register", (req, res) => {
     password: req.body.password
   }
 res.cookie("userID", userID);
-res.cookie("email", req.body.email);
 res.redirect("/urls");    
 });
 
@@ -97,17 +102,34 @@ app.get("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   res.render("urls_login");
-})
+});
 
 //login 
 app.post("/login", (req, res) => {
-  res.cookie("userID", req.body.username);
-  res.redirect("/urls");
+  function userExists(email) {
+    for (let user in users){
+      if (users[user].email === email) {
+        return users[user].id;
+      }
+    }
+  }
+
+  const userID = userExists(req.body.email);
+  if (!userID) {
+    res.status(403).send("User email is wrong");
+  }
+
+  if (!passwordMatch(userID, req.body.password)) {
+    res.status(403).send("User password is wrong");
+  } else {
+    res.cookie("userID", userID);
+    res.redirect("/urls"); 
+  }
 });
 
 // //logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("userID");
   res.redirect("/urls");
 });
 
