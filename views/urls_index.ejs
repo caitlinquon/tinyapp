@@ -24,6 +24,7 @@ th, td {
 <body>
   <% include partials/_header.ejs %>
   <p><a href="/urls/new">Create new shortened URL</a></p>
+  <% if(locals.user){ %>
   <table border="2">
     <tr>
      <td><h4>Short ID<h4></td> <td><h4>Long ID<h4></td>
@@ -42,6 +43,9 @@ th, td {
     </tr>
   <% }) %>
   </table>
+  <% } else{ %> 
+  <h2>Please <a href="/login">Login </a></h2>
+  <% } %>
 
   
   
